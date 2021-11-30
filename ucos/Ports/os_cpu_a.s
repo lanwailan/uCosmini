@@ -34,11 +34,11 @@ OSStartHighRdy
 
     LDR   R0,=NVIC_INT_CTRL              ;触发pendsv异常
     LDR   R1,=NVIC_PENDSVSET
-    STR   R1,[0]
+    STR   R1,[R0]
 
     CPSIE   I    ; 启用总中断，NMI和HardFault除外
 
-    OSStartHang
+OSStartHang
     B    OSStartHang                ;程序永远不会到这里
 
 
@@ -80,13 +80,13 @@ OS_CPU_PendSVHandler_nosave
 
     LDR R1,=OSTCBHighRdyPtr   ;(6) 加载OSTCBHighRdyPtr 指针的地址到R1
 
-    LDR R2,[R1]     (7);加载OSTCBHighRdyPtr指针到R2
+    LDR R2,[R1]     ; (7)加载OSTCBHighRdyPtr指针到R2
 
-    STR R2,[R0]      (8); 存储OSTCBHighRdyPtr 到 OSTCBCurPtr
+    STR R2,[R0]      ; (8)存储OSTCBHighRdyPtr 到 OSTCBCurPtr
 
-    LDR R0,[R2]   (9); 加载OSTCBHighRdyPtr 到R0.TCB第一个成员是栈指针StkPtr.所以R0=StkPtr。后续操作都是通过R0
+    LDR R0,[R2]   ; (9)加载OSTCBHighRdyPtr 到R0.TCB第一个成员是栈指针StkPtr.所以R0=StkPtr。后续操作都是通过R0
 
-    LDMIA R0!,{R4-R11} (10)
+    LDMIA R0!,{R4-R11} ;(10)
 
     MSR PSP,R0
 
@@ -95,4 +95,6 @@ OS_CPU_PendSVHandler_nosave
     CPSIE I
 
     BX LR
+    NOP
+    END
 
