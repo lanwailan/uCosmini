@@ -46,7 +46,7 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>.\</OutputDirectory>
+          <OutputDirectory>.\Objects\</OutputDirectory>
           <OutputName>uCOSmini</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\ucos\Ports;.\ucos\Source</IncludePath>
+              <IncludePath>.\ucos\Ports;.\ucos\Source;.\ucos\CPU</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -409,11 +409,6 @@
           <GroupName>ucos/ports</GroupName>
           <Files>
             <File>
-              <FileName>cpu.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\ucos\Ports\cpu.h</FilePath>
-            </File>
-            <File>
               <FileName>os_cpu_a.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\ucos\Ports\os_cpu_a.s</FilePath>
@@ -422,6 +417,16 @@
               <FileName>os_cpu_c.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ucos\Ports\os_cpu_c.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_cpu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\Ports\os_cpu.h</FilePath>
+            </File>
+            <File>
+              <FileName>cpu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\CPU\cpu.h</FilePath>
             </File>
           </Files>
         </Group>

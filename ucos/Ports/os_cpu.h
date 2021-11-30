@@ -1,16 +1,30 @@
-#ifndef OS_CPU_H
-#define OS_CPU_H
+#ifndef  OS_CPU_H
+#define  OS_CPU_H
 
-typedef unsigned short CPU_INT16U;
-typedef unsigned int    CPU_INT32U;
-typedef unsigned char   CPU_INT8U;
+/*
+*********************************************************************************************************
+*                                               ºê¶¨Òå
+*********************************************************************************************************
+*/
 
-
-typedef CPU_INT32U  CPU_ADDR;
-
-typedef CPU_INT32U   CPU_STK;
-typedef CPU_ADDR		 CPU_STK_SIZE;
-
-typedef volatile CPU_INT32U CPU_REG32;
-
+#ifndef  NVIC_INT_CTRL
+#define  NVIC_INT_CTRL                      *((CPU_REG32 *)0xE000ED04)   /* ÖÐ¶Ï¿ØÖÆ¼°×´Ì¬¼Ä´æÆ÷ SCB_ICSR */
 #endif
+
+#ifndef  NVIC_PENDSVSET
+#define  NVIC_PENDSVSET                                    0x10000000    /* ´¥·¢PendSVÒì³£µÄÖµ Bit28£ºPENDSVSET */
+#endif
+
+#define  OS_TASK_SW()               NVIC_INT_CTRL = NVIC_PENDSVSET
+#define  OSIntCtxSw()               NVIC_INT_CTRL = NVIC_PENDSVSET
+/*
+*********************************************************************************************************
+*                                              º¯ÊýÉùÃ÷
+*********************************************************************************************************
+*/
+void OSStartHighRdy(void);
+void PendSV_Handler(void);
+
+
+#endif   /* OS_CPU_H */
+

@@ -37,10 +37,24 @@ void OSStart(OS_ERR *p_err)
         /* 用于启动任务切换，即配置PendSV的优先级为最低，然后触发PendSV异常，在pendsv异常服务函数中进行任务切换*/
         OSStartHighRdy();
 
-        *p_err = OS_ERR_FATAL_RUNNING;
+        *p_err = OS_ERR_FATAL_RETURN;
     }
     else
     {
         *p_err = OS_STATE_OS_RUNNING;
     }
+}
+
+void OSSched (void)
+{
+    if( OSTCBCurPtr == OSRdyList[0].HeadPtr )
+    {
+        OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
+    }
+    else
+    {
+        OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
+    }
+    
+    OS_TASK_SW();
 }

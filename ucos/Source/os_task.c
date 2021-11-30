@@ -13,8 +13,8 @@ void OSTaskCreate( OS_TCB       *p_tcb,
 
     p_sp = OSTaskStkInit(p_task,p_arg,p_stk_base,stk_size);
 
-    p_tcb->StkPtr = p_sp;
-    p_tcb->StkSize = stk_size;
+    p_tcb->stkPtr = p_sp;
+    p_tcb->stkSize = stk_size;
 
     *p_err = OS_ERR_NONE;
 
