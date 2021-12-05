@@ -33,7 +33,7 @@ OSStartHighRdy
     MSR  PSP,R0
 
     LDR   R0,=NVIC_INT_CTRL              ;触发pendsv异常
-    LDR   R1,=NVIC_PENDSVSET
+    LDR   R1,=NVIC_PENDSVSET             ; write 1 to bit28 means trig pendsv 
     STR   R1,[R0]
 
     CPSIE   I    ; 启用总中断，NMI和HardFault除外
