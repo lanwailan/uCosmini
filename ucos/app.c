@@ -60,7 +60,9 @@ int main(void)
 {   
     OS_ERR err;
     
-    
+    CPU_IntDis();
+
+    OS_CPU_SysTickInit(10);
     
     /* ³õÊ¼»¯Ïà¹ØµÄÈ«¾Ö±äÁ¿ */
     OSInit(&err);
@@ -112,7 +114,7 @@ void Task1( void *p_arg )
         delay( 100 );
         
         /* ÈÎÎñÇÐ»»£¬ÕâÀïÊÇÊÖ¶¯ÇÐ»» */      
-        OSSched();
+        //OSSched();
     }
 }
 
@@ -127,7 +129,7 @@ void Task2( void *p_arg )
         delay( 100 );
         
         /* ÈÎÎñÇÐ»»£¬ÕâÀïÊÇÊÖ¶¯ÇÐ»» */
-        OSSched();
+        //OSSched();
     }
 }
 

@@ -13,5 +13,11 @@ typedef  CPU_ADDR               CPU_STK_SIZE;
 
 typedef  volatile  CPU_INT32U  CPU_REG32;
 
+
+
+
+void CPU_IntDis(void);
+void CPU_IntEn(void);
+
 #endif /* CPU_H */
 

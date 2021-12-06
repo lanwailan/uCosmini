@@ -26,5 +26,8 @@ void OSStartHighRdy(void);
 void PendSV_Handler(void);
 
 
+void OS_CPU_SysTickInit(CPU_INT32U ms);
+void SysTick_Handler(void);
+
 #endif   /* OS_CPU_H */
 
