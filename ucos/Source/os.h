@@ -238,6 +238,8 @@ struct os_rdy_list
 struct os_tcb{
 	 CPU_STK    *stkPtr;
 	 CPU_STK_SIZE  stkSize;
+
+     OS_TICK   TaskDelayTicks;
 };
 
 OS_EXT OS_TCB    		*OSTCBCurPtr;
@@ -245,6 +247,8 @@ OS_EXT OS_TCB    		*OSTCBHighRdyPtr;
 OS_EXT OS_RDY_LIST		OSRdyList[OS_CFG_PRIO_MAX];
 OS_EXT OS_STATE   		OSRunning;
 
+OS_EXT OS_TCB           OSIdleTaskTCB;
+OS_EXT OS_IDLE_CTR      OSIdleTaskCtr;
 
 void OSTaskCreate (OS_TCB        *p_tcb,
 					OS_TASK_PTR   p_task,
@@ -267,4 +271,14 @@ CPU_STK *OSTaskStkInit(OS_TASK_PTR   p_task,
 
 
 void OS_RdyListInit (void);
+
+/* idle task stack start address */
+extern CPU_STK *const OSCfg_IdleTaskStkBasePtr;
+extern CPU_STK_SIZE const OSCfg_IdleTaskStkSize;
+
+void OS_IdleTask(void *p_arg);
+void OS_IdleTaskInit(OS_ERR *p_arg);
+						
+void OSTimeTick  (void);	
+void OSTimeDly   (OS_TICK dly);
 #endif

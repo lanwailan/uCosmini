@@ -109,10 +109,11 @@ void Task1( void *p_arg )
     for( ;; )
     {
         flag1 = 1;
-        delay( 100 );       
+        //delay( 100 ); 
+        OSTimeDly(2);      
         flag1 = 0;
-        delay( 100 );
-        
+        //delay( 100 );
+        OSTimeDly(2);
         /* ÈÎÎñÇÐ»»£¬ÕâÀïÊÇÊÖ¶¯ÇÐ»» */      
         //OSSched();
     }
@@ -124,10 +125,11 @@ void Task2( void *p_arg )
     for( ;; )
     {
         flag2 = 1;
-        delay( 100 );       
+        //delay( 100 ); 
+        OSTimeDly(2);      
         flag2 = 0;
-        delay( 100 );
-        
+        //delay( 100 );
+        OSTimeDly(2);
         /* ÈÎÎñÇÐ»»£¬ÕâÀïÊÇÊÖ¶¯ÇÐ»» */
         //OSSched();
     }

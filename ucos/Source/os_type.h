@@ -6,5 +6,7 @@
 typedef CPU_INT16U          OS_OBJ_QTY;
 typedef CPU_INT8U           OS_PRIO;
 typedef CPU_INT8U           OS_STATE;
+typedef CPU_INT32U			    OS_IDLE_CTR;
+typedef CPU_INT32U          OS_TICK;
 
 #endif
