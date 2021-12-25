@@ -1,21 +1,62 @@
 #ifndef CPU_H
 #define CPU_H
 
+/*
+*********************************************************************************************************
+*                                          ÂåÖÂê´ÁöÑÂ§¥Êñá‰ª∂
+*********************************************************************************************************
+*/
 #include  <cpu_def.h>
 #include  <cpu_cfg.h>
 
-
+/*
+*********************************************************************************************************
+*                                        Ê†áÂáÜÊï∞ÊçÆÁ±ªÂûãÈÖçÁΩÆ
+*********************************************************************************************************
+*/
 typedef  unsigned  short       CPU_INT16U;
 typedef  unsigned  int         CPU_INT32U;
 typedef  unsigned  char        CPU_INT08U;
+typedef  volatile CPU_INT32U   CPU_REG32;
 
+/*
+*********************************************************************************************************
+*                                 ÈÖçÁΩÆ CPU Âú∞ÂùÄ & Êï∞ÊçÆ ÁöÑÁ±ªÂûã
+*********************************************************************************************************
+*/
 typedef  CPU_INT32U  CPU_ADDR;
 
-/* ∂—’ª ˝æ›¿‡–Õ÷ÿ∂®“Â */
+/*
+*********************************************************************************************************
+*                                          CPU Â†ÜÊ†àÈÖçÁΩÆ
+*********************************************************************************************************
+*/
 typedef  CPU_INT32U             CPU_STK;
 typedef  CPU_ADDR               CPU_STK_SIZE;
 
-typedef  volatile  CPU_INT32U  CPU_REG32;
+/*
+*********************************************************************************************************
+*                                          ‰∏¥ÁïåÊÆµÈÖçÁΩÆ
+*********************************************************************************************************
+*/
+#define CPU_CFG_CRITICAL_METHOD     CPU_CRITICAL_METHOD_STATUS_LOCAL
+
+typedef CPU_INT32U          CPU_SR;
+
+#if(CPU_CFG_CRITICAL_METHOD == CPU_CRITICAL_METHOD_STATUS_LOCAL )
+#define CPU_SR_ALLOC()    CPU_SR   cpu_sr = (CPU_SR)0
+#else
+#define CPU_SR_ALLOC()
+#endif
+
+/*save CPU Áä∂ÊÄÅ &‰ΩøËÉΩ‰∏≠Êñ≠ */
+#define CPU_INT_DIS()          do{cpu_sr = CPU_SR_Save();}while(0)
+/*restore CPU Áä∂ÊÄÅ*/
+#define CPU_INT_EN()           do{CPU_SR_Restore(cpu_sr);}while(0)
+
+#define CPU_CRITICAL_ENTER()    do{CPU_INT_DIS();}while(0)
+
+#define CPU_CRITICAL_EXIT()     do{CPU_INT_EN();}while(0)
 
 
 
@@ -27,8 +68,10 @@ typedef  volatile  CPU_INT32U  CPU_REG32;
 *********************************************************************************************************
 */
 
-void        CPU_IntDis       (void); 	/* ‘⁄cpu_a.asm∂®“Â */
-void        CPU_IntEn        (void);	/* ‘⁄cpu_a.asm∂®“Â */
+void        CPU_IntDis       (void); 	/* ÔøΩÔøΩcpu_a.asmÔøΩÔøΩÔøΩÔøΩ */
+void        CPU_IntEn        (void);	/* ÔøΩÔøΩcpu_a.asmÔøΩÔøΩÔøΩÔøΩ */
+CPU_SR      CPU_SR_Save      (void);
+void        CPU_SR_Restore(CPU_SR cpu_sr);
 
 
 
