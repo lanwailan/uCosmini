@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\ucos\CPU;.\ucos\Ports;.\ucos\Source</IncludePath>
+              <IncludePath>.\ucos\uC-CPU;.\ucos\uC-LIB;.\ucos\uCOS-III\Ports;.\ucos\uCOS-III\Source</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -411,17 +411,17 @@
             <File>
               <FileName>os_cpu.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\ucos\Ports\os_cpu.h</FilePath>
+              <FilePath>.\ucos\uCOS-III\Ports\os_cpu.h</FilePath>
             </File>
             <File>
               <FileName>os_cpu_a.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\ucos\Ports\os_cpu_a.s</FilePath>
+              <FilePath>.\ucos\uCOS-III\Ports\os_cpu_a.s</FilePath>
             </File>
             <File>
               <FileName>os_cpu_c.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\ucos\Ports\os_cpu_c.c</FilePath>
+              <FilePath>.\ucos\uCOS-III\Ports\os_cpu_c.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -431,47 +431,47 @@
             <File>
               <FileName>os.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\ucos\Source\os.h</FilePath>
+              <FilePath>.\ucos\uCOS-III\Source\os.h</FilePath>
             </File>
             <File>
               <FileName>os_cfg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\ucos\Source\os_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>os_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ucos\Source\os_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>os_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ucos\Source\os_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>os_type.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\ucos\Source\os_type.h</FilePath>
-            </File>
-            <File>
-              <FileName>os_var.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ucos\Source\os_var.c</FilePath>
-            </File>
-            <File>
-              <FileName>os_time.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ucos\Source\os_time.c</FilePath>
+              <FilePath>.\ucos\uCOS-III\Source\os_cfg.h</FilePath>
             </File>
             <File>
               <FileName>os_cfg_app.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\ucos\Source\os_cfg_app.c</FilePath>
+              <FilePath>.\ucos\uCOS-III\Source\os_cfg_app.c</FilePath>
             </File>
             <File>
               <FileName>os_cfg_app.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\ucos\Source\os_cfg_app.h</FilePath>
+              <FilePath>.\ucos\uCOS-III\Source\os_cfg_app.h</FilePath>
+            </File>
+            <File>
+              <FileName>os_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ucos\uCOS-III\Source\os_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ucos\uCOS-III\Source\os_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_time.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ucos\uCOS-III\Source\os_time.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_type.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\uCOS-III\Source\os_type.h</FilePath>
+            </File>
+            <File>
+              <FileName>os_var.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ucos\uCOS-III\Source\os_var.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -481,12 +481,32 @@
             <File>
               <FileName>cpu.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\ucos\CPU\cpu.h</FilePath>
+              <FilePath>.\ucos\uC-CPU\cpu.h</FilePath>
             </File>
             <File>
               <FileName>cpu_a.asm</FileName>
               <FileType>2</FileType>
-              <FilePath>.\ucos\CPU\cpu_a.asm</FilePath>
+              <FilePath>.\ucos\uC-CPU\cpu_a.asm</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\uC-CPU\cpu_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ucos\uC-CPU\cpu_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\uC-CPU\cpu_core.h</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\uC-CPU\cpu_def.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -497,6 +517,16 @@
               <FileName>app.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ucos\app.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ucos/lib</GroupName>
+          <Files>
+            <File>
+              <FileName>lib_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ucos\uC-LIB\lib_def.h</FilePath>
             </File>
           </Files>
         </Group>
