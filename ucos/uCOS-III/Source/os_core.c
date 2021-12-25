@@ -1,142 +1,160 @@
 #include "os.h"
 
+/* ¾ÍÐ÷ÁÐ±í³õÊ¼»¯ */
 void OS_RdyListInit(void)
 {
-    OS_PRIO i;
-    OS_RDY_LIST *p_rdy_list;
-
-    for(i=0u;i<OS_CFG_PRIO_MAX;i++)
-    {
-        p_rdy_list = &OSRdyList[i];
-        p_rdy_list->HeadPtr = (OS_TCB *)0;
-        p_rdy_list->TailPtr = (OS_TCB *)0;
-    }
+	OS_PRIO i;
+	OS_RDY_LIST *p_rdy_list;
+	
+	for( i=0u; i<OS_CFG_PRIO_MAX; i++ )
+	{
+		p_rdy_list = &OSRdyList[i];
+		p_rdy_list->HeadPtr = (OS_TCB *)0;
+		p_rdy_list->TailPtr = (OS_TCB *)0;
+	}
 }
 
-void OSInit(OS_ERR *p_err)
+/* RTOS³õÊ¼»¯
+** ³õÊ¼»¯È«¾Ö±äÁ¿
+*/
+void OSInit (OS_ERR *p_err)
 {
-    /* OS global running status */
-    OSRunning = OS_STATE_OS_STOPPED;
-
-
-    OSTCBCurPtr = (OS_TCB *)0;
-
-    OSTCBHighRdyPtr = (OS_TCB *)0;
-
-    OS_RdyListInit();
-    OS_IdleTaskInit(p_err);
-    
-    if(*p_err != OS_ERR_NONE)
-    {
+	/* ÅäÖÃOS³õÊ¼×´Ì¬ÎªÍ£Ö¹Ì¬ */
+	OSRunning =  OS_STATE_OS_STOPPED;
+	
+	/* ³õÊ¼»¯Á½¸öÈ«¾ÖTCB£¬ÕâÁ½¸öTCBÓÃÓÚÈÎÎñÇÐ»» */
+	OSTCBCurPtr = (OS_TCB *)0;
+	OSTCBHighRdyPtr = (OS_TCB *)0;
+	
+	/* ³õÊ¼»¯¾ÍÐ÷ÁÐ±í */
+	OS_RdyListInit();
+	
+	/* ³õÊ¼»¯¿ÕÏÐÈÎÎñ */
+	OS_IdleTaskInit(p_err);
+	if (*p_err != OS_ERR_NONE) 
+	{
         return;
     }
 }
 
-void OSStart(OS_ERR *p_err)
-{
-    if(OSRunning == OS_STATE_OS_STOPPED)
-    {
-        OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
-
-        /* ç”¨äºŽå¯åŠ¨ä»»åŠ¡åˆ‡æ¢ï¼Œå³é…ç½®PendSVçš„ä¼˜å…ˆçº§ä¸ºæœ€ä½Žï¼Œç„¶åŽè§¦å‘PendSVå¼‚å¸¸ï¼Œåœ¨pendsvå¼‚å¸¸æœåŠ¡å‡½æ•°ä¸­è¿›è¡Œä»»åŠ¡åˆ‡æ¢*/
-        OSStartHighRdy();
-
-        *p_err = OS_ERR_FATAL_RETURN;
-    }
-    else
-    {
-        *p_err = OS_STATE_OS_RUNNING;
-    }
+/* Æô¶¯RTOS£¬½«²»ÔÙ·µ»Ø */
+void OSStart (OS_ERR *p_err)
+{	
+	if( OSRunning == OS_STATE_OS_STOPPED )
+	{
+		/* ÊÖ¶¯ÅäÖÃÈÎÎñ1ÏÈÔËÐÐ */
+		OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
+		
+		/* Æô¶¯ÈÎÎñÇÐ»»£¬²»»á·µ»Ø */
+		OSStartHighRdy();
+		
+		/* ²»»áÔËÐÐµ½ÕâÀï£¬ÔËÐÐµ½ÕâÀï±íÊ¾·¢ÉúÁËÖÂÃüµÄ´íÎó */
+		*p_err = OS_ERR_FATAL_RETURN;
+	}
+	else
+	{
+		*p_err = OS_STATE_OS_RUNNING;
+	}
 }
 
-void OSSched (void)
+/* ÈÎÎñÇÐ»»£¬Êµ¼Ê¾ÍÊÇ´¥·¢PendSVÒì³££¬È»ºóÔÚPendSVÒì³£ÖÐ½øÐÐÉÏÏÂÎÄÇÐ»» */
+void OSSched(void)
 {
-#if(0)
-    if( OSTCBCurPtr == OSRdyList[0].HeadPtr )
-    {
-        OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
-    }
-    else
-    {
-        OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
-    }
-    
-    OS_TASK_SW();
+#if 0	/* ·Ç³£¼òµ¥µÄÈÎÎñµ÷¶È£ºÁ½¸öÈÎÎñÂÖÁ÷Ö´ÐÐ */
+	if( OSTCBCurPtr == OSRdyList[0].HeadPtr )
+	{
+		OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
+	}
+	else
+	{
+		OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
+	}
 #endif
-
-    if(OSTCBCurPtr == &OSIdleTaskTCB)
-    {
-        if(OSRdyList[0].HeadPtr->TaskDelayTicks == 0)
-        {
-            OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
-        }
-        else if(OSRdyList[1].HeadPtr->TaskDelayTicks ==0)
-        {
-            OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
-        }
-        else
-        {
-            return;
-        }
-    }
-    else
-    {
-        if(OSTCBCurPtr == OSRdyList[0].HeadPtr)
-        {
-            if(OSRdyList[1].HeadPtr->TaskDelayTicks == 0)
-            {
-                OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
-            }
-            else if(OSTCBCurPtr->TaskDelayTicks != 0)
-            {
-                OSTCBHighRdyPtr = &OSIdleTaskTCB;
-            }
-            else
-            {
-                return;
-            }
-            
-        }
-        else if(OSTCBCurPtr == OSRdyList[1].HeadPtr)
-        {
-            if(OSRdyList[0].HeadPtr->TaskDelayTicks == 0)
-            {
-                OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
-            }
-            else if(OSTCBCurPtr->TaskDelayTicks != 0)
-            {
-                OSTCBHighRdyPtr = &OSIdleTaskTCB;
-            }
-            else
-            {
-                return;
-            }
-        }
-        
-    }
-    OS_TASK_SW();
+	
+	/* Èç¹ûµ±Ç°ÈÎÎñÊÇ¿ÕÏÐÈÎÎñ£¬ÄÇÃ´¾ÍÈ¥³¢ÊÔÖ´ÐÐÈÎÎñ1»òÕßÈÎÎñ2£¬¿´¿´ËûÃÇµÄÑÓÊ±Ê±¼äÊÇ·ñ½áÊø
+	   Èç¹ûÈÎÎñµÄÑÓÊ±Ê±¼ä¾ùÃ»ÓÐµ½ÆÚ£¬ÄÇ¾Í·µ»Ø¼ÌÐøÖ´ÐÐ¿ÕÏÐÈÎÎñ */
+	if( OSTCBCurPtr == &OSIdleTaskTCB )
+	{
+		if(OSRdyList[0].HeadPtr->TaskDelayTicks == 0)
+		{
+			OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
+		}
+		else if(OSRdyList[1].HeadPtr->TaskDelayTicks == 0)
+		{
+			OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
+		}
+		else
+		{
+			return;		/* ÈÎÎñÑÓÊ±¾ùÃ»ÓÐµ½ÆÚÔò·µ»Ø£¬¼ÌÐøÖ´ÐÐ¿ÕÏÐÈÎÎñ */
+		} 
+	}
+	else
+	{
+		/*Èç¹ûÊÇtask1»òÕßtask2µÄ»°£¬¼ì²éÏÂÁíÍâÒ»¸öÈÎÎñ,Èç¹ûÁíÍâµÄÈÎÎñ²»ÔÚÑÓÊ±ÖÐ£¬¾ÍÇÐ»»µ½¸ÃÈÎÎñ
+        ·ñÔò£¬ÅÐ¶ÏÏÂµ±Ç°ÈÎÎñÊÇ·ñÓ¦¸Ã½øÈëÑÓÊ±×´Ì¬£¬Èç¹ûÊÇµÄ»°£¬¾ÍÇÐ»»µ½¿ÕÏÐÈÎÎñ¡£·ñÔò¾Í²»½øÐÐÈÎºÎÇÐ»» */
+		if(OSTCBCurPtr == OSRdyList[0].HeadPtr)
+		{
+			if(OSRdyList[1].HeadPtr->TaskDelayTicks == 0)
+			{
+				OSTCBHighRdyPtr = OSRdyList[1].HeadPtr;
+			}
+			else if(OSTCBCurPtr->TaskDelayTicks != 0)
+			{
+				OSTCBHighRdyPtr = &OSIdleTaskTCB;
+			}
+			else 
+			{
+				return;		/* ·µ»Ø£¬²»½øÐÐÇÐ»»£¬ÒòÎªÁ½¸öÈÎÎñ¶¼´¦ÓÚÑÓÊ±ÖÐ */
+			}
+		}
+		else if(OSTCBCurPtr == OSRdyList[1].HeadPtr)
+		{
+			if(OSRdyList[0].HeadPtr->TaskDelayTicks == 0)
+			{
+				OSTCBHighRdyPtr = OSRdyList[0].HeadPtr;
+			}
+			else if(OSTCBCurPtr->TaskDelayTicks != 0)
+			{
+				OSTCBHighRdyPtr = &OSIdleTaskTCB;
+			}
+			else 
+			{
+				return;		/* ·µ»Ø£¬²»½øÐÐÇÐ»»£¬ÒòÎªÁ½¸öÈÎÎñ¶¼´¦ÓÚÑÓÊ±ÖÐ */
+			}
+		}
+	}
+	
+	/* ÈÎÎñÇÐ»» */
+	OS_TASK_SW();
 }
 
-void OS_IdleTask(void *p_arg)
+
+/* ¿ÕÏÐÈÎÎñ */
+void  OS_IdleTask (void  *p_arg)
 {
-    p_arg = p_arg;
-
-    for(;;)
-    {
-        OSIdleTaskCtr ++;
-    }
+	p_arg = p_arg;
+	
+	/* ¿ÕÏÐÈÎÎñÊ²Ã´¶¼²»×ö£¬Ö»¶ÔÈ«¾Ö±äÁ¿OSIdleTaskCtr ++ ²Ù×÷ */
+	for(;;)
+	{
+		OSIdleTaskCtr++;
+	}
 }
 
-void OS_IdleTaskInit(OS_ERR *p_err)
-{
-    OSIdleTaskCtr = (OS_IDLE_CTR)0;
-
-    OSTaskCreate(
-        (OS_TCB *)&OSIdleTaskTCB,
-        (OS_TASK_PTR)OS_IdleTask,
-        (void *)0,
-        (CPU_STK *)OSCfg_IdleTaskStkBasePtr,
-        (CPU_STK_SIZE)OSCfg_IdleTaskStkSize,
-        (OS_ERR *)p_err
-        );
+/* ¿ÕÏÐÈÎÎñ³õÊ¼»¯ */
+void  OS_IdleTaskInit(OS_ERR  *p_err)
+{	
+	/* ³õÊ¼»¯¿ÕÏÐÈÎÎñ¼ÆÊýÆ÷ */
+	OSIdleTaskCtr = (OS_IDLE_CTR)0;
+	
+	/* ´´½¨¿ÕÏÐÈÎÎñ */
+	OSTaskCreate( (OS_TCB     *)&OSIdleTaskTCB, 
+			      (OS_TASK_PTR )OS_IdleTask, 
+			      (void       *)0,
+			      (CPU_STK    *)OSCfg_IdleTaskStkBasePtr,
+			      (CPU_STK_SIZE)OSCfg_IdleTaskStkSize,
+			      (OS_ERR     *)p_err );
 }
+
+
+

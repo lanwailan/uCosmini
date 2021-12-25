@@ -1,6 +1,7 @@
 #include "os.h"
 
-void OSTimeTick(void)
+
+void  OSTimeTick (void)
 {
 	unsigned int i;
 
@@ -19,8 +20,14 @@ void OSTimeTick(void)
 	OSSched();
 }
 
-void OSTimeDly(OS_TICK dly)
+/* 阻塞延时 */
+void  OSTimeDly(OS_TICK dly)
 {
-    OSTCBCurPtr->TaskDelayTicks = dly;
-    OSSched();
+	/* 设置延时时间 */
+	OSTCBCurPtr->TaskDelayTicks = dly;
+	
+	/* 进行任务调度 */
+	OSSched();	
 }
+
+

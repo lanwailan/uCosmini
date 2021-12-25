@@ -1,100 +1,103 @@
 
-    IMPORT OSTCBCurPtr    ;
-    IMPORT OSTCBHighRdyPtr
+;********************************************************************************************************
+;                                            È«¾Ö±äÁ¿&º¯Êý
+;********************************************************************************************************
+    IMPORT  OSTCBCurPtr                                         ; Íâ²¿ÎÄ¼þÒýÈËµÄ²Î¿¼
+    IMPORT  OSTCBHighRdyPtr
+		
+    EXPORT  OSStartHighRdy                                      ; ¸ÃÎÄ¼þ¶¨ÒåµÄº¯Êý
+	EXPORT  PendSV_Handler
 
-    EXPORT OSStartHighRdy ;
-    EXPORT PendSV_Handler
+;********************************************************************************************************
+;                                               ³£Á¿
+;********************************************************************************************************
+;--------------------------------------------------------------------------------------------------------
+;ÓÐ¹ØÄÚºËÍâÉè¼Ä´æÆ÷¶¨Òå¿É²Î¿¼¹Ù·½ÎÄµµ£ºSTM32F10xxx Cortex-M3 programming manual
+;ÏµÍ³¿ØÖÆ¿éÍâÉèSCBµØÖ··¶Î§£º0xE000ED00-0xE000ED3F
+;--------------------------------------------------------------------------------------------------------
+NVIC_INT_CTRL   EQU     0xE000ED04                              ; ÖÐ¶Ï¿ØÖÆ¼°×´Ì¬¼Ä´æÆ÷ SCB_ICSR¡£
+NVIC_SYSPRI14   EQU     0xE000ED22                              ; ÏµÍ³ÓÅÏÈ¼¶¼Ä´æÆ÷ SCB_SHPR3£ºbit16~23
+NVIC_PENDSV_PRI EQU           0xFF                              ; PendSV ÓÅÏÈ¼¶µÄÖµ(×îµÍ)¡£
+NVIC_PENDSVSET  EQU     0x10000000                              ; ´¥·¢PendSVÒì³£µÄÖµ Bit28£ºPENDSVSET¡£
 
-
-
-NVIC_INT_CTRL    EQU      0xE000ED04
-NVIC_SYSPRI14    EQU      0xE000ED22
-NVIC_PENDSV_PRI  EQU      0xFF
-NVIC_PENDSVSET   EQU      0x10000000
-
-    PRESERVE8
-    THUMB
-
-    AREA CODE,CODE,READONLY
-
-;*******************************************************************
-;                        å¼€å§‹ç¬¬ä¸€æ¬¡ä¸Šä¸‹æ–‡åˆ‡æ¢
-; 1ã€é…ç½®PendSVå¼‚å¸¸çš„ä¼˜å…ˆçº§ä¸ºæœ€ä½Ž
-; 2ã€åœ¨å¼€å§‹ç¬¬ä¸€æ¬¡ä¸Šä¸‹æ–‡åˆ‡æ¢ä¹‹å‰ï¼Œè®¾ç½®psp=0
-; 3ã€è§¦å‘PendSVå¼‚å¸¸ï¼Œå¼€å§‹ä¸Šä¸‹æ–‡åˆ‡æ¢
-;*******************************************************************
-
-OSStartHighRdy
-    LDR R0,=NVIC_SYSPRI14               ; è®¾ç½®pendsvå¼‚å¸¸ä¼˜å…ˆçº§ä¸ºæœ€ä½Ž
-    LDR R1,=NVIC_PENDSV_PRI
-    STRB R1,[R0]
-
-    MOVS R0,#0                          ;è®¾ç½®pspçš„å€¼ä¸º0ï¼Œå¼€å§‹ç¬¬ä¸€æ¬¡ä¸Šä¸‹æ–‡åˆ‡æ¢
-    MSR  PSP,R0
-
-    LDR   R0,=NVIC_INT_CTRL              ;è§¦å‘pendsvå¼‚å¸¸
-    LDR   R1,=NVIC_PENDSVSET             ; write 1 to bit28 means trig pendsv 
-    STR   R1,[R0]
-
-    CPSIE   I    ; å¯ç”¨æ€»ä¸­æ–­ï¼ŒNMIå’ŒHardFaulté™¤å¤–
-
+;********************************************************************************************************
+;                                          ´úÂë²úÉúÖ¸Áî
+;********************************************************************************************************
+	PRESERVE8
+	THUMB
+		
+	AREA CODE, CODE, READONLY
+		
+;********************************************************************************************************
+;                                          ¿ªÊ¼µÚÒ»´ÎÉÏÏÂÎÄÇÐ»»
+; 1¡¢ÅäÖÃPendSVÒì³£µÄÓÅÏÈ¼¶Îª×îµÍ
+; 2¡¢ÔÚ¿ªÊ¼µÚÒ»´ÎÉÏÏÂÎÄÇÐ»»Ö®Ç°£¬ÉèÖÃpsp=0
+; 3¡¢´¥·¢PendSVÒì³££¬¿ªÊ¼ÉÏÏÂÎÄÇÐ»»
+;********************************************************************************************************
+OSStartHighRdy PROC
+	LDR		R0, = NVIC_SYSPRI14              ; ÉèÖÃ  PendSV Òì³£ÓÅÏÈ¼¶Îª×îµÍ
+	LDR     R1, = NVIC_PENDSV_PRI
+	STRB    R1, [R0]
+	
+	MOVS    R0, #0                           ; ÉèÖÃpspµÄÖµÎª0£¬¿ªÊ¼µÚÒ»´ÎÉÏÏÂÎÄÇÐ»»
+	MSR     PSP, R0
+	
+	LDR     R0, =NVIC_INT_CTRL               ; ´¥·¢PendSVÒì³£
+	LDR     R1, =NVIC_PENDSVSET
+	STR     R1, [R0]
+	
+	CPSIE   I                                 ; ¿ªÖÐ¶Ï
+	
 OSStartHang
-    B    OSStartHang                ;ç¨‹åºæ°¸è¿œä¸ä¼šåˆ°è¿™é‡Œ
+	B       OSStartHang                       ; ³ÌÐòÓ¦ÓÀÔ¶²»»áÔËÐÐµ½ÕâÀï	
+	
+	ENDP
+;********************************************************************************************************
+;                                          PendSVHandlerÒì³£
+;********************************************************************************************************
+PendSV_Handler PROC
+; ÈÎÎñµÄ±£´æ£¬¼´°ÑCPU¼Ä´æÆ÷µÄÖµ´æ´¢µ½ÈÎÎñµÄ¶ÑÕ»ÖÐ	
+	CPSID   I                                 ; ¹ØÖÐ¶Ï£¬NMIºÍHardFault³ýÍâ£¬·ÀÖ¹ÉÏÏÂÎÄÇÐ»»±»ÖÐ¶Ï	
+	MRS     R0, PSP                           ; ½«pspµÄÖµ¼ÓÔØµ½R0
+	CBZ     R0, OS_CPU_PendSVHandler_nosave   ; ÅÐ¶ÏR0£¬Èç¹ûÖµÎª0ÔòÌø×ªµ½OS_CPU_PendSVHandler_nosave
+	                                          ; ½øÐÐµÚÒ»´ÎÈÎÎñÇÐ»»µÄÊ±ºò£¬R0¿Ï¶¨Îª0
+	
+	; ÔÚ½øÈëPendSVÒì³£µÄÊ±ºò£¬µ±Ç°CPUµÄxPSR£¬PC£¨ÈÎÎñÈë¿ÚµØÖ·£©£¬R14£¬R12£¬R3£¬R2£¬R1£¬R0»á×Ô¶¯´æ´¢µ½µ±Ç°ÈÎÎñ¶ÑÕ»£¬Í¬Ê±µÝ¼õPSPµÄÖµ
+	STMDB   R0!, {R4-R11}                     ; ÊÖ¶¯´æ´¢CPU¼Ä´æÆ÷R4-R11µÄÖµµ½µ±Ç°ÈÎÎñµÄ¶ÑÕ»
+	
+	LDR     R1, = OSTCBCurPtr                 ; ¼ÓÔØ OSTCBCurPtr Ö¸ÕëµÄµØÖ·µ½R1£¬ÕâÀïLDRÊôÓÚÎ±Ö¸Áî
+	LDR     R1, [R1]                          ; ¼ÓÔØ OSTCBCurPtr Ö¸Õëµ½R1£¬ÕâÀïLDRÊôÓÚARMÖ¸Áî
+	STR     R0, [R1]                          ; ´æ´¢R0µÄÖµµ½	OSTCBCurPtr->OSTCBStkPtr£¬Õâ¸öÊ±ºòR0´æµÄÊÇÈÎÎñ¿ÕÏÐÕ»µÄÕ»¶¥
 
+; ÈÎÎñµÄÇÐ»»£¬¼´°ÑÏÂÒ»¸öÒªÔËÐÐµÄÈÎÎñµÄ¶ÑÕ»ÄÚÈÝ¼ÓÔØµ½CPU¼Ä´æÆ÷ÖÐ
+OS_CPU_PendSVHandler_nosave  
+	; OSTCBCurPtr = OSTCBHighRdyPtr;
+	LDR     R0, = OSTCBCurPtr                 ; ¼ÓÔØ OSTCBCurPtr Ö¸ÕëµÄµØÖ·µ½R0£¬ÕâÀïLDRÊôÓÚÎ±Ö¸Áî
+	LDR     R1, = OSTCBHighRdyPtr             ; ¼ÓÔØ OSTCBHighRdyPtr Ö¸ÕëµÄµØÖ·µ½R1£¬ÕâÀïLDRÊôÓÚÎ±Ö¸Áî
+	LDR     R2, [R1]                          ; ¼ÓÔØ OSTCBHighRdyPtr Ö¸Õëµ½R2£¬ÕâÀïLDRÊôÓÚARMÖ¸Áî
+	STR     R2, [R0]                          ; ´æ´¢ OSTCBHighRdyPtr µ½ OSTCBCurPtr
+	
+	LDR     R0, [R2]                          ; ¼ÓÔØ OSTCBHighRdyPtr µ½ R0
+	LDMIA   R0!, {R4-R11}                     ; ¼ÓÔØÐèÒªÊÖ¶¯±£´æµÄÐÅÏ¢µ½CPU¼Ä´æÆ÷R4-R11
+	
+	MSR     PSP, R0                           ; ¸üÐÂPSPµÄÖµ£¬Õâ¸öÊ±ºòPSPÖ¸ÏòÏÂÒ»¸öÒªÖ´ÐÐµÄÈÎÎñµÄ¶ÑÕ»µÄÕ»µ×£¨Õâ¸öÕ»µ×ÒÑ¾­¼ÓÉÏ¸Õ¸ÕÊÖ¶¯¼ÓÔØµ½CPU¼Ä´æÆ÷R4-R11µÄÆ«ÒÆ£©
+	ORR     LR, LR, #0x04                     ; È·±£Òì³£·µ»ØÊ¹ÓÃµÄ¶ÑÕ»Ö¸ÕëÊÇPSP£¬¼´LR¼Ä´æÆ÷µÄÎ»2ÒªÎª1
+	CPSIE   I                                 ; ¿ªÖÐ¶Ï
+	BX      LR                                ; Òì³£·µ»Ø£¬Õâ¸öÊ±ºòÈÎÎñ¶ÑÕ»ÖÐµÄÊ£ÏÂÄÚÈÝ½«»á×Ô¶¯¼ÓÔØµ½xPSR£¬PC£¨ÈÎÎñÈë¿ÚµØÖ·£©£¬R14£¬R12£¬R3£¬R2£¬R1£¬R0£¨ÈÎÎñµÄÐÎ²Î£©
+	                                          ; Í¬Ê±PSPµÄÖµÒ²½«¸üÐÂ£¬¼´Ö¸ÏòÈÎÎñ¶ÑÕ»µÄÕ»¶¥¡£ÔÚSTM32ÖÐ£¬¶ÑÕ»ÊÇÓÉ¸ßµØÖ·ÏòµÍµØÖ·Éú³¤µÄ¡£
+	
+	NOP                                       ; ÎªÁË»ã±àÖ¸Áî¶ÔÆë£¬²»È»»áÓÐ¾¯¸æ
+	
+	ENDP
 
-;*******************************************************************
-;                        pendsvHandler å¼‚å¸¸
-;*******************************************************************
-PendSV_Handler
-    CPSID   I
-
-    MRS     R0,PSP    ;å°†process stack pointer åŠ è½½åˆ°R0
-
-    CBZ     R0, OS_CPU_PendSVHandler_nosave
-
-    ;ä¿å­˜ä¸Šä¸‹æ–‡
-    ;ä»»åŠ¡åˆ‡æ¢ï¼ŒæŠŠä¸‹ä¸€ä¸ªè¦è¿è¡Œçš„ä»»åŠ¡çš„æ ˆå†…å®¹åŠ è½½åˆ°cpuå¯„å­˜å™¨ä¸­
-    ;è¿›å…¥pendvå¼‚å¸¸çš„æ—¶å€™ï¼Œå½“å‰cpu xPSRï¼ŒPC
-    ;R14,R12,R3,R2,R1ï¼ŒR0ä¼šè‡ªåŠ¨å­˜å‚¨åˆ°å½“å‰ä»»åŠ¡æ ˆ
-    ;åŒæ—¶é€’å‡PSPï¼Œé¡ºä¾¿é€šè¿‡ä»£ç MRS R0,PSP
-    ;æ‰‹åŠ¨å­˜å‚¨CPUå¯„å­˜å™¨R4-R11çš„å€¼åˆ°å½“å‰ä»»åŠ¡çš„æ ˆ
-
-    STMDB R0!,{R4-R11}
-
-    ;åŠ è½½OSTCBCurPtr çš„æŒ‡é’ˆåœ°å€åˆ°R1
-    LDR R1,=OSTCBCurPtr
-    ;åŠ è½½OSTCBCurPtrçš„æŒ‡é’ˆåˆ°R1
-    LDR R1,[R1]
-    ;å­˜å‚¨R0çš„å€¼åˆ°OSTCBCurPtr->OSTCBStkPtrï¼Œè¿™ä¸ªæ—¶å€™R0å­˜çš„æ˜¯ä»»åŠ¡ç©ºé—²æ ˆçš„æ ˆé¡¶
-    STR R0,[R1]
-
-    ;åˆ‡æ¢ä¸‹æ–‡
-    ;å®žçŽ°OSTCBCurPtr = OSTCBHighRdyPtr
-    ;æŠŠä¸‹ä¸€ä¸ªè¦è¿è¡Œçš„ä»»åŠ¡æ ˆå†…å®¹åŠ è½½åˆ°CPUå¯„å­˜å™¨ä¸­
-    ;
-
-OS_CPU_PendSVHandler_nosave
-    
-    ;åŠ è½½OSTCBCurPtr çš„æŒ‡é’ˆåœ°å€åˆ°R0ï¼Œè¿™é‡ŒLDRå±žäºŽä¼ªæŒ‡ä»¤
-    LDR R0,=OSTCBCurPtr       ;(5)
-
-    LDR R1,=OSTCBHighRdyPtr   ;(6) åŠ è½½OSTCBHighRdyPtr æŒ‡é’ˆçš„åœ°å€åˆ°R1
-
-    LDR R2,[R1]     ; (7)åŠ è½½OSTCBHighRdyPtræŒ‡é’ˆåˆ°R2
-
-    STR R2,[R0]      ; (8)å­˜å‚¨OSTCBHighRdyPtr åˆ° OSTCBCurPtr
-
-    LDR R0,[R2]   ; (9)åŠ è½½OSTCBHighRdyPtr åˆ°R0.TCBç¬¬ä¸€ä¸ªæˆå‘˜æ˜¯æ ˆæŒ‡é’ˆStkPtr.æ‰€ä»¥R0=StkPtrã€‚åŽç»­æ“ä½œéƒ½æ˜¯é€šè¿‡R0
-
-    LDMIA R0!,{R4-R11} ;(10)
-
-    MSR PSP,R0
-
-    ORR LR,LR,#0x04
-
-    CPSIE I
-
-    BX LR
-    NOP
-    END
-
+;********************************************************************************************************
+;                                                ¹ØÖÐ¶Ï
+; NMI ºÍÓ²FAULT ³ýÍâ
+;********************************************************************************************************
+AllIntDis  PROC
+	CPSID   I
+	
+	ENDP
+	
+	NOP                                       ; ÎªÁË»ã±àÖ¸Áî¶ÔÆë£¬²»È»»áÓÐ¾¯¸æ
+	END                                       ; »ã±àÎÄ¼þ½áÊø
